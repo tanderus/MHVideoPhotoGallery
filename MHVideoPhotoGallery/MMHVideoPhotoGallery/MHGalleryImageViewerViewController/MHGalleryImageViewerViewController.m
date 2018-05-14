@@ -44,10 +44,6 @@
 @property (nonatomic, strong) MHGradientView           *bottomSuperView;
 @property (nonatomic, strong) MHGradientView           *topSuperView;
 
-@property (nonatomic, strong) MHBarButtonItem          *shareBarButton;
-@property (nonatomic, strong) MHBarButtonItem          *leftBarButton;
-@property (nonatomic, strong) MHBarButtonItem          *rightBarButton;
-@property (nonatomic, strong) MHBarButtonItem          *playStopBarButton;
 @end
 
 @implementation MHGalleryImageViewerViewController
@@ -228,42 +224,6 @@
        [self.descriptionLabel.bottomAnchor constraintEqualToAnchor:self.bottomSuperView.bottomAnchor constant: -5],
        ]
      ];
-
-    self.playStopBarButton = [MHBarButtonItem.alloc initWithImage:MHGalleryImage(@"play")
-                                                            style:UIBarButtonItemStylePlain
-                                                           target:self
-                                                           action:@selector(playStopButtonPressed)];
-    self.rightBarButton.type = MHBarButtonItemTypePlayPause;
-
-    
-    self.leftBarButton = [MHBarButtonItem.alloc initWithImage:MHGalleryImage(@"left_arrow")
-                                                        style:UIBarButtonItemStylePlain
-                                                       target:self
-                                                       action:@selector(leftPressed:)];
-    self.rightBarButton.type = MHBarButtonItemTypeLeft;
-
-    
-    self.rightBarButton = [MHBarButtonItem.alloc initWithImage:MHGalleryImage(@"right_arrow")
-                                                         style:UIBarButtonItemStylePlain
-                                                        target:self
-                                                        action:@selector(rightPressed:)];
-    self.rightBarButton.type = MHBarButtonItemTypeRigth;
-
-    
-    self.shareBarButton = [MHBarButtonItem.alloc initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                                                                      target:self
-                                                                      action:@selector(sharePressed)];
-    self.shareBarButton.type = MHBarButtonItemTypeShare;
-    
-    if (self.UICustomization.hideShare) {
-        
-        self.shareBarButton = [MHBarButtonItem.alloc initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
-                                                                             target:self
-                                                                             action:nil];
-        self.shareBarButton.type = MHBarButtonItemTypeFlexible;
-
-        self.shareBarButton.width = 30;
-    }
     
     
     self.toolbar.barTintColor = self.UICustomization.barTintColor;
@@ -325,17 +285,8 @@
     return YES;
 }
 
--(void)enableOrDisbaleBarbButtons{
-    
-    self.leftBarButton.enabled  = YES;
-    self.rightBarButton.enabled  = YES;
-    
-    if (self.pageIndex == 0) {
-        self.leftBarButton.enabled =NO;
-    }
-    if(self.pageIndex == self.numberOfGalleryItems-1){
-        self.rightBarButton.enabled =NO;
-    }
+-(void)enableOrDisbaleBarbButtons
+{
 }
 
 -(void)backButtonAction{
@@ -372,12 +323,12 @@
     return ([touch.view isKindOfClass:UIControl.class] == NO);
 }
 
--(void)changeToPlayButton{
-    self.playStopBarButton.image = MHGalleryImage(@"play");
+-(void)changeToPlayButton
+{
 }
 
--(void)changeToPauseButton{
-    self.playStopBarButton.image = MHGalleryImage(@"pause");
+-(void)changeToPauseButton
+{
 }
 
 -(void)playStopButtonPressed{
@@ -406,8 +357,8 @@
             UIActivityViewController *act = [UIActivityViewController.alloc initWithActivityItems:@[imageViewController.imageView.image] applicationActivities:nil];
             [self presentViewController:act animated:YES completion:nil];
             
-            if ([act respondsToSelector:@selector(popoverPresentationController)]) {
-                act.popoverPresentationController.barButtonItem = self.shareBarButton;
+            if ([act respondsToSelector:@selector(popoverPresentationController)])
+            {
             }
         }        
     }
@@ -553,9 +504,9 @@
         }else{
             [self changeToPlayButton];
         }
-        [self setToolbarItemsWithBarButtons:@[self.shareBarButton,flex,self.leftBarButton,flex,self.playStopBarButton,flex,self.rightBarButton,flex,fixed] forGalleryItem:item];
+        [self setToolbarItemsWithBarButtons:@[flex] forGalleryItem:item];
     }else{
-        [self setToolbarItemsWithBarButtons:@[self.shareBarButton,flex,self.leftBarButton,flex,self.rightBarButton,flex,fixed] forGalleryItem:item];
+        [self setToolbarItemsWithBarButtons:@[flex] forGalleryItem:item];
     }
 }
 
@@ -598,9 +549,8 @@
     return nil;
 }
 
--(void)leftPressed:(id)sender{
-    self.rightBarButton.enabled = YES;
-    
+-(void)leftPressed:(id)sender
+{
     MHImageViewController *theCurrentViewController = self.pageViewController.viewControllers.firstObject;
     if (theCurrentViewController.moviePlayer) {
         [theCurrentViewController removeAllMoviePlayerViewsAndNotifications];
@@ -610,8 +560,8 @@
     MHImageViewController *imageViewController =[MHImageViewController imageViewControllerForMHMediaItem:[self itemForIndex:indexPage-1] viewController:self];
     imageViewController.pageIndex = indexPage-1;
     
-    if (indexPage-1 == 0) {
-        self.leftBarButton.enabled = NO;
+    if (indexPage-1 == 0)
+    {
     }
     if (!imageViewController) {
         return;
@@ -626,9 +576,8 @@
     }];
 }
 
--(void)rightPressed:(id)sender{
-    self.leftBarButton.enabled =YES;
-    
+-(void)rightPressed:(id)sender
+{
     MHImageViewController *theCurrentViewController = self.pageViewController.viewControllers.firstObject;
     if (theCurrentViewController.moviePlayer) {
         [theCurrentViewController removeAllMoviePlayerViewsAndNotifications];
@@ -638,8 +587,8 @@
     MHImageViewController *imageViewController =[MHImageViewController imageViewControllerForMHMediaItem:[self itemForIndex:indexPage+1] viewController:self];
     imageViewController.pageIndex = indexPage+1;
     
-    if (indexPage+1 == self.numberOfGalleryItems-1) {
-        self.rightBarButton.enabled = NO;
+    if (indexPage+1 == self.numberOfGalleryItems-1)
+    {
     }
     if (!imageViewController) {
         return;
@@ -666,15 +615,11 @@
     
     NSInteger indexPage = vc.pageIndex;
     
-    if (self.numberOfGalleryItems !=1 && self.numberOfGalleryItems-1 != indexPage) {
-        self.leftBarButton.enabled =YES;
-        self.rightBarButton.enabled =YES;
-    }
     
     [self removeVideoPlayerForVC:vc];
     
-    if (indexPage ==0) {
-        self.leftBarButton.enabled = NO;
+    if (indexPage ==0)
+    {
         MHImageViewController *imageViewController =[MHImageViewController imageViewControllerForMHMediaItem:nil viewController:self];
         imageViewController.pageIndex = 0;
         return imageViewController;
@@ -695,14 +640,13 @@
     
     NSInteger indexPage = vc.pageIndex;
     
-    if (self.numberOfGalleryItems !=1 && indexPage !=0) {
-        self.leftBarButton.enabled = YES;
-        self.rightBarButton.enabled = YES;
+    if (self.numberOfGalleryItems !=1 && indexPage !=0)
+    {
     }
     [self removeVideoPlayerForVC:vc];
     
-    if (indexPage ==self.numberOfGalleryItems-1) {
-        self.rightBarButton.enabled = NO;
+    if (indexPage ==self.numberOfGalleryItems-1)
+    {
         MHImageViewController *imageViewController =[MHImageViewController imageViewControllerForMHMediaItem:nil viewController:self];
         imageViewController.pageIndex = self.numberOfGalleryItems-1;
         return imageViewController;
