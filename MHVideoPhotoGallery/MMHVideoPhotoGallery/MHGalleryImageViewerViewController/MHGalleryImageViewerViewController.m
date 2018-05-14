@@ -164,18 +164,6 @@
         make.edges.mas_equalTo(self.view);
     }];
     
-    self.toolbar = UIToolbar.new;
-    self.toolbar.tintColor = self.UICustomization.barButtonsTintColor;
-    self.toolbar.tag = 307;
-    self.toolbar.translatesAutoresizingMaskIntoConstraints = false;
-    [self.view addSubview:self.toolbar];
-    
-    [NSLayoutConstraint activateConstraints:@[
-        [self.toolbar.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-        [self.toolbar.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
-        [self.toolbar.bottomAnchor constraintEqualToAnchor:self.bottomLayoutGuide.topAnchor]
-    ]];
-    
     self.topSuperView = [MHGradientView.alloc initWithDirection:MHGradientDirectionBottomToTop andCustomization:self.UICustomization];
     [self.view addSubview:self.topSuperView];
     
@@ -206,7 +194,7 @@
     [self.bottomSuperView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(self.view.mas_left);
         make.right.mas_equalTo(self.view.mas_right);
-        make.bottom.mas_equalTo(self.toolbar.mas_top);
+        make.bottom.mas_equalTo(self.view.mas_bottom);
     }];
     
     self.descriptionLabel = MHScrollViewLabel.new;
@@ -226,9 +214,6 @@
      ];
     
     
-    self.toolbar.barTintColor = self.UICustomization.barTintColor;
-    self.toolbar.barStyle = self.UICustomization.barStyle;
-    
     [(UIScrollView*)self.pageViewController.view.subviews[0] setDelegate:self];
     [(UIGestureRecognizer*)[[self.pageViewController.view.subviews[0] gestureRecognizers] firstObject] setDelegate:self];
     
@@ -247,7 +232,7 @@
     }];
 
     [self.bottomSuperView mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.bottom.mas_equalTo(self.toolbar.mas_top);
+        make.bottom.mas_equalTo(self.mas_bottomLayoutGuideTop);
     }];
 }
 
@@ -514,7 +499,6 @@
     if ([self.galleryViewController.galleryDelegate respondsToSelector:@selector(customizeableToolBarItems:forGalleryItem:)]) {
         barButtons = [self.galleryViewController.galleryDelegate customizeableToolBarItems:barButtons forGalleryItem:item];
     }
-    self.toolbar.items = barButtons;
 }
 
 
@@ -1470,7 +1454,6 @@
     self.viewController.pageViewController.view.backgroundColor = [self.viewController.UICustomization MHGalleryBackgroundColorForViewMode:viewMode];
     
     self.navigationController.navigationBar.alpha = alpha;
-    self.viewController.toolbar.alpha = alpha;
     
     self.viewController.topSuperView.alpha = alpha;
     self.viewController.descriptionLabel.alpha = alpha;
@@ -1501,11 +1484,9 @@
             
             self.viewController.hiddingToolBarAndNavigationBar = YES;
             self.navigationController.navigationBar.hidden  =YES;
-            self.viewController.toolbar.hidden =YES;
         }];
     }else{
         self.navigationController.navigationBar.hidden = NO;
-        self.viewController.toolbar.hidden = NO;
         
         [UIView animateWithDuration:0.3 animations:^{
             [self changeUIForViewMode:MHGalleryViewModeImageViewerNavigationBarShown];
